@@ -14,33 +14,56 @@ inputs:
   webserver_port:
     description: The HTTP web server port
     default: 8080
+
   agent_user:
     description: User name used when SSH-ing into the started machine
+
   image:
     description: Openstack image name or id to use for the new server
+
   flavor:
     description: Openstack flavor name or id to use for the new server
+
   network_name:
     description: Openstack network name the new server will be connected to
+
   floating_network_id:
     description: The id of the network to use for allocating a floating ip
+
   key_pair_name:
+    default: cloudify_test_key
     description: Openstack key pair name of the key to associate with the new server
+
   private_key_path:
     description: |
       Path to the private key which will be used for connecting to the server
       on the manager or machine running CLI if running in local mode.
 
+  region:
+    default: ''
+    type: string
+
+dsl_definitions:
+
+  openstack_config: &openstack_config
+    username: { get_secret: keystone_username }
+    password: { get_secret: keystone_password }
+    tenant_name: { get_secret: keystone_tenant_name }
+    auth_url: { get_secret: keystone_url }
+    region: { get_input: region }
+
 node_templates:
   virtual_ip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
+      openstack_config: *openstack_config
       floatingip:
         floating_network_id: { get_input: floating_network_id }
 
   security_group:
     type: cloudify.openstack.nodes.SecurityGroup
     properties:
+      openstack_config: *openstack_config
       rules:
         - port: { get_property: [ http_web_server, port ] }
           remote_ip_prefix: 0.0.0.0/0
@@ -50,13 +73,14 @@ node_templates:
   keypair:
     type: cloudify.openstack.nodes.KeyPair
     properties:
-      use_external_resource: true
+      openstack_config: *openstack_config
       resource_id: { get_input: key_pair_name }
       private_key_path: { get_input: private_key_path }
 
   vm:
     type: cloudify.openstack.nodes.Server
     properties:
+      openstack_config: *openstack_config
       agent_config:
         user: { get_input: agent_user }
         key: { get_property: [ keypair, private_key_path ] }
@@ -103,7 +127,7 @@ node_templates:
                     config:
                       devices: x?vd[a-z]+[0-9]*$
                   NetworkCollector: {}
- 
+
   http_web_server:
     type: cloudify.nodes.WebServer
     properties:
