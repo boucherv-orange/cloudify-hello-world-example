@@ -27,6 +27,9 @@ inputs:
   network_name:
     description: Openstack network name the new server will be connected to
 
+  subnet_name:
+    description: subnet_name
+
   floating_network_id:
     description: The id of the network to use for allocating a floating ip
 
@@ -65,6 +68,36 @@ dsl_definitions:
 
 
 node_templates:
+
+  private_subnet:
+    type: cloudify.openstack.nodes.Subnet
+    properties:
+      openstack_config: *openstack_config
+      use_external_resource: true
+      resource_id: { get_input: subnet_name }
+    relationships:
+      - target: private_network
+        type: cloudify.relationships.contained_in
+
+  private_network:
+    type: cloudify.openstack.nodes.Network
+    properties:
+      openstack_config: *openstack_config
+      use_external_resource: true
+      resource_id: { get_input: network_name }
+
+  vm_port:
+    type: cloudify.openstack.nodes.Port
+    properties:
+      openstack_config: *openstack_config
+    relationships:
+      - type: cloudify.relationships.contained_in
+        target: private_network
+      - type: cloudify.relationships.depends_on
+        target: private_subnet
+      - type: cloudify.openstack.port_connected_to_floating_ip
+        target: virtual_ip
+
   virtual_ip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
@@ -102,8 +135,8 @@ node_templates:
     relationships:
       - type: cloudify.openstack.server_connected_to_keypair
         target: keypair
-      - type: cloudify.openstack.server_connected_to_floating_ip
-        target: virtual_ip
+      - type: cloudify.openstack.server_connected_to_port
+        target: vm_port
       - type: cloudify.openstack.server_connected_to_security_group
         target: security_group
     interfaces:
