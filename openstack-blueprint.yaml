@@ -26,9 +26,11 @@ inputs:
 
   network_name:
     description: Openstack network name the new server will be connected to
+    default: net2
 
   subnet_name:
     description: subnet_name
+    default: subnet-net2
 
   floating_network_id:
     description: The id of the network to use for allocating a floating ip
