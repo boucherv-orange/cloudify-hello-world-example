@@ -35,11 +35,16 @@ inputs:
     description: Openstack key pair name of the key to associate with the new server
 
   private_key_path:
+    default: ~/.ssh/hello-world.pem
     description: |
       Path to the private key which will be used for connecting to the server
       on the manager or machine running CLI if running in local mode.
 
   region:
+    default: ''
+    type: string
+
+  central_region:
     default: ''
     type: string
 
@@ -52,11 +57,19 @@ dsl_definitions:
     auth_url: { get_secret: keystone_url }
     region: { get_input: region }
 
+  central_openstack_config: &central_openstack_config
+    username: { get_secret: keystone_username }
+    password: { get_secret: keystone_password }
+    tenant_name: { get_secret: keystone_tenant_name }
+    auth_url: { get_secret: keystone_url }
+    region: { get_input: central_region }
+
+
 node_templates:
   virtual_ip:
     type: cloudify.openstack.nodes.FloatingIP
     properties:
-      openstack_config: *openstack_config
+      openstack_config: *central_openstack_config
       floatingip:
         floating_network_id: { get_input: floating_network_id }
 
