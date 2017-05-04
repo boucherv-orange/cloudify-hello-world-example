@@ -104,8 +104,6 @@ node_templates:
         target: keypair
       - type: cloudify.openstack.server_connected_to_floating_ip
         target: virtual_ip
-      - type: cloudify.openstack.server_connected_to_security_group
-        target: security_group
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
