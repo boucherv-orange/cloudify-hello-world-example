@@ -36,9 +36,7 @@ inputs:
 
   private_key_path:
     default: '~/.ssh/hello-world.pem'
-    description: |
-      Path to the private key which will be used for connecting to the server
-      on the manager or machine running CLI if running in local mode.
+    description:  Path to the private key which will be used for connecting to the server on the manager or machine running CLI if running in local mode.
 
   region:
     default: ''
