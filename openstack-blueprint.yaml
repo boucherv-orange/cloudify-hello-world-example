@@ -35,7 +35,7 @@ inputs:
     description: Openstack key pair name of the key to associate with the new server
 
   private_key_path:
-    default: ~/.ssh/hello-world.pem
+    default: '~/.ssh/hello-world.pem'
     description: |
       Path to the private key which will be used for connecting to the server
       on the manager or machine running CLI if running in local mode.
