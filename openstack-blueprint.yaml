@@ -83,6 +83,8 @@ node_templates:
         target: private_network
       - type: cloudify.openstack.port_connected_to_floating_ip
         target: virtual_ip
+      - type: cloudify.openstack.port_connected_to_security_group
+        target: security_group
 
   virtual_ip:
     type: cloudify.openstack.nodes.FloatingIP
@@ -106,6 +108,7 @@ node_templates:
     properties:
       openstack_config: *openstack_config
       resource_id: { get_input: key_pair_name }
+      use_external_resource: true
       private_key_path: { get_input: private_key_path }
 
   vm:
@@ -123,8 +126,6 @@ node_templates:
         target: keypair
       - type: cloudify.openstack.server_connected_to_port
         target: vm_port
-      - type: cloudify.openstack.server_connected_to_security_group
-        target: security_group
     interfaces:
       ###########################################################
       # We are infact telling cloudify to install a diamond
