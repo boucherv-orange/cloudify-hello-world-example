@@ -7,7 +7,7 @@ description: >
 
 imports:
   - http://www.getcloudify.org/spec/cloudify/4.0.1/types.yaml
-  - http://www.getcloudify.org/spec/openstack-plugin/2.0.1/plugin.yaml
+  - https://github.com/boucherv-orange/cloudify-openstack-plugin/raw/2.0-devel/plugin.yaml
   - http://www.getcloudify.org/spec/diamond-plugin/1.3.5/plugin.yaml
 
 inputs:
