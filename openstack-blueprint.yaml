@@ -67,20 +67,21 @@ dsl_definitions:
 
 node_templates:
 
-  private_network:
-    type: cloudify.openstack.nodes.Network
-    properties:
-      openstack_config: *openstack_config
-      use_external_resource: true
-      resource_id: { get_input: network_name }
 
   vm_port:
     type: cloudify.openstack.nodes.Port
     properties:
-      openstack_config: *openstack_config
+      use_external_resource: true
+      openstack_config: *central_openstack_config
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          inputs:
+            args:
+              port_ip: { get_attribute: [ vm, ip ] }
     relationships:
-      - type: cloudify.relationships.contained_in
-        target: private_network
+      - type: cloudify.relationship.connected_to
+        target: vm
       - type: cloudify.openstack.port_connected_to_floating_ip
         target: virtual_ip
       - type: cloudify.openstack.port_connected_to_security_group
